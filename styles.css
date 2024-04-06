@@ -1,5 +1,5 @@
 #main-window {
-    background-color: #17181A;
+    background-color: #0A0D11;
 }
 
 #menu {
@@ -7,22 +7,20 @@
     color: #ffffff;
     font-size: 24px;
     font-family: "Inter";
-    
-}
-
-#logo {
-    background-color: #6272A4;
-    color: #ffffff;
-    font-size: 24px;
-    font-family: 'Just Me Again Down Here', sans-serif;
-    
 }
 
 #menu-item:hover {
     background-color: #44475A;
 }
 
-@font-face {
-    font-family: 'Just Me Again Down Here';
-    src: url('JustMeAgainDownHere-Regular.ttf') format('truetype');
+#temperature-info {
+    color: #ffffff;
+    font-size: 96px;
+    font-family: "Inter";
+}
+
+#other-info {
+    color: #ffffff;
+    font-size: 24px;
+    font-family: "Inter";
 }

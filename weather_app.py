@@ -1,6 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout
 from PyQt6.QtGui import QFont, QFontDatabase
+from PyQt6.QtCore import Qt
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -20,9 +21,38 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         self.central_widget.setLayout(layout)
 
-        label = QLabel("Welcome to My Application")
-        label.setObjectName("logo")
-        layout.addWidget(label)
+        weather_layout = QVBoxLayout()
+        layout.addLayout(weather_layout)
+
+        temperature_info = QLabel("12ºC")
+        temperature_info.setObjectName("temperature-info")
+        temperature_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        weather_layout.addWidget(temperature_info)
+
+        felt_temperature_info = QLabel("Odczuwalnie: 11ºC")
+        felt_temperature_info.setObjectName("other-info")
+        felt_temperature_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        weather_layout.addWidget(felt_temperature_info)
+
+        message_info = QLabel("Spodziewaj się dnia z częściowym zachmurzeniem i deszczem!")
+        message_info.setObjectName("other-info")
+        message_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        weather_layout.addWidget(message_info)
+
+        pressure_info = QLabel("Ciśnienie:\t\t1014 hPa")
+        pressure_info.setObjectName("other-info")
+        pressure_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        weather_layout.addWidget(pressure_info)
+
+        moisture_info = QLabel("Wilgotność:\t\t91%")
+        moisture_info.setObjectName("other-info")
+        moisture_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        weather_layout.addWidget(moisture_info)
+
+        wind_speed_info = QLabel("Prędkość:\t\t8km/h")
+        wind_speed_info.setObjectName("other-info")
+        wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        weather_layout.addWidget(wind_speed_info)
 
     def create_menu_bar(self):
         menubar = self.menuBar()
