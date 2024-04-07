@@ -6,6 +6,8 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 from googletrans import Translator
 
+api_key = "a873d523875cab9a1f04d55526e2d604"
+
 lat = "50.06143"
 lon = "19.93658"
 
@@ -14,11 +16,12 @@ menu_style="background-color: #6272A4; color: #ffffff; font-size: 24px;"
 text_box_style="background-color: #F8F8F2; border: 1px #F8F8F2;"
 temp_info_style="color: #ffffff; font-size: 96px;"
 other_info_style="color: #ffffff; font-size: 24px;"
+about_program_style="color: #ffffff; font-size: 20px;"
 close_button_style="color: #ffffff; background-color: #FF5555; border: 1px #FF5555;"
 save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
+inner_widget_style="background-color: #44475A; padding: 10px;"
 
 def get_weather():
-    # api_key = "a873d523875cab9a1f04d55526e2d604"
     # url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
     # response = requests.get(url)
     # data = response.json()
@@ -40,6 +43,14 @@ def get_weather():
         }
     }
 
+def change_city(city):
+    url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={api_key}"
+    response = requests.get(url)
+    data = response.json()
+    global lat, lon
+    lat = data[0]["lat"]
+    lon = data[0]["lon"]
+
 class BaseWindow(QMainWindow):
     windows = []
 
@@ -51,7 +62,6 @@ class BaseWindow(QMainWindow):
 
         self.create_menu_bar()
         self.create_ui()
-        print(lat)
 
     def create_menu_bar(self):
         menubar = self.menuBar()
@@ -65,30 +75,35 @@ class BaseWindow(QMainWindow):
         settings_menu = menubar.addMenu("Ustawienia")
         settings_menu.setObjectName("menu")
 
-        menubar.addAction("O Programie")
+        about_program_action = menubar.addAction("O Programie")
+        about_program_action.triggered.connect(self.on_about_program_clicked)
 
         coordinates_menu = localisation_menu.addMenu("Zmień Koordynaty")
         coordinates_menu.setObjectName("menu")
 
-        localisation_menu.addAction("Zmień Miasto")
+        city_action = localisation_menu.addAction("Zmień Miasto")
+        city_action.triggered.connect(self.on_change_city_clicked)
 
         latitude_action = coordinates_menu.addAction("Długość Geo.")
-        latitude_action.triggered.connect(self.on_latitude_clicked)
+        latitude_action.triggered.connect(self.on_change_longitude_clicked)
 
-        coordinates_menu.addAction("Szerokość Geo.")
+        longitude_action = coordinates_menu.addAction("Szerokość Geo.")
+        longitude_action.triggered.connect(self.on_change_longitude_clicked)
 
-        settings_menu.addAction("Motyw")
+        theme_action = settings_menu.addAction("Motyw")
+        theme_action.triggered.connect(self.on_change_theme_clicked)
+
 
     def create_ui(self):
         pass
 
-    def on_latitude_clicked(self):
+    def on_change_latitude_clicked(self):
         latitude_window = ChangeLatitudeWindow()
         latitude_window.show()
         self.windows.append(latitude_window)
         self.close()
 
-    def on_longitude_clicked(self):
+    def on_change_longitude_clicked(self):
         longitude_window = ChangeLongitudeWindow()
         longitude_window.show()
         self.windows.append(longitude_window)
@@ -100,19 +115,19 @@ class BaseWindow(QMainWindow):
         self.windows.append(about_program_window)
         self.close()
 
-    def on_city_clicked(self):
+    def on_change_city_clicked(self):
         city_window = ChangeCityWindow()
         city_window.show()
         self.windows.append(city_window)
         self.close()
 
-    def on_theme_clicked(self):
+    def on_change_theme_clicked(self):
         theme_window = ChangeThemeWindow()
         theme_window.show()
         self.windows.append(theme_window)
         self.close()
 
-    def on_weather_clicked(self):
+    def on_show_weather_clicked(self):
         weather_window = ShowWeatherWindow()
         weather_window.show()
         self.windows.append(weather_window)
@@ -186,24 +201,24 @@ class ChangeLatitudeWindow(BaseWindow):
         inner_widget = QWidget()
         inner_layout = QVBoxLayout()
         inner_widget.setLayout(inner_layout)
-        inner_widget.setStyleSheet("background-color: #44475A; padding: 10px;")
+        inner_widget.setStyleSheet(inner_widget_style)
 
         close_layout = QHBoxLayout()
         close_layout.addStretch()
         close_button = QPushButton("X")
-        close_button.clicked.connect(self.on_weather_clicked)
+        close_button.clicked.connect(self.on_show_weather_clicked)
         close_button.setStyleSheet(close_button_style)
         close_layout.addWidget(close_button)
         inner_layout.addLayout(close_layout)
 
         latitude_label = QLabel(f"Podaj długość geograficzną:")
         latitude_label.setStyleSheet(other_info_style)
-        inner_layout.addWidget(latitude_label)
+        inner_layout.addWidget(latitude_label, 1)
 
         self.number_entry = QLineEdit()
         self.number_entry.setPlaceholderText("<długość geograficzna>")
         self.number_entry.setStyleSheet(text_box_style)
-        inner_layout.addWidget(self.number_entry)
+        inner_layout.addWidget(self.number_entry, 2)
 
         save_button = QPushButton("Zatwierdź")
         save_button.clicked.connect(self.save_number)
@@ -217,11 +232,130 @@ class ChangeLatitudeWindow(BaseWindow):
     def save_number(self):
         global lat
         lat = self.number_entry.text()
-        self.on_weather_clicked()
+        self.on_show_weather_clicked()
+
+class ChangeLongitudeWindow(BaseWindow):
+    def create_ui(self):
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(100, 100, 100, 100)
+
+        inner_widget = QWidget()
+        inner_layout = QVBoxLayout()
+        inner_widget.setLayout(inner_layout)
+        inner_widget.setStyleSheet(inner_widget_style)
+
+        close_layout = QHBoxLayout()
+        close_layout.addStretch()
+        close_button = QPushButton("X")
+        close_button.clicked.connect(self.on_show_weather_clicked)
+        close_button.setStyleSheet(close_button_style)
+        close_layout.addWidget(close_button)
+        inner_layout.addLayout(close_layout)
+
+        longitude_label = QLabel(f"Podaj szerokość geograficzną:")
+        longitude_label.setStyleSheet(other_info_style)
+        inner_layout.addWidget(longitude_label, 1)
+
+        self.number_entry = QLineEdit()
+        self.number_entry.setPlaceholderText("<szerokość geograficzna>")
+        self.number_entry.setStyleSheet(text_box_style)
+        inner_layout.addWidget(self.number_entry, 2)
+
+        save_button = QPushButton("Zatwierdź")
+        save_button.clicked.connect(self.save_number)
+        save_button.setStyleSheet(save_button_style)
+        inner_layout.addWidget(save_button)
+
+        main_layout.addWidget(inner_widget)
+
+        main_widget.setLayout(main_layout)
+
+    def save_number(self):
+        global lon
+        lon = self.number_entry.text()
+        self.on_show_weather_clicked()
+
+class ChangeCityWindow(BaseWindow):
+    def create_ui(self):
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(100, 100, 100, 100)
+
+        inner_widget = QWidget()
+        inner_layout = QVBoxLayout()
+        inner_widget.setLayout(inner_layout)
+        inner_widget.setStyleSheet(inner_widget_style)
+
+        close_layout = QHBoxLayout()
+        close_layout.addStretch()
+        close_button = QPushButton("X")
+        close_button.clicked.connect(self.on_show_weather_clicked)
+        close_button.setStyleSheet(close_button_style)
+        close_layout.addWidget(close_button)
+        inner_layout.addLayout(close_layout)
+
+        city_label = QLabel(f"Podaj miasto:")
+        city_label.setStyleSheet(other_info_style)
+        inner_layout.addWidget(city_label, 1)
+
+        self.city_entry = QLineEdit()
+        self.city_entry.setPlaceholderText("<miasto>")
+        self.city_entry.setStyleSheet(text_box_style)
+        inner_layout.addWidget(self.city_entry, 2)
+
+        save_button = QPushButton("Zatwierdź")
+        save_button.clicked.connect(self.save_city)
+        save_button.setStyleSheet(save_button_style)
+        inner_layout.addWidget(save_button)
+
+        main_layout.addWidget(inner_widget)
+
+        main_widget.setLayout(main_layout)
+
+    def save_city(self):
+        city = self.city_entry.text()
+        change_city(city)
+        self.on_show_weather_clicked()
+
+class AboutProgramWindow(BaseWindow):
+    def create_ui(self):
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(100, 100, 100, 100)
+
+        inner_widget = QWidget()
+        inner_layout = QVBoxLayout()
+        inner_widget.setLayout(inner_layout)
+        inner_widget.setStyleSheet(inner_widget_style)
+
+        close_layout = QHBoxLayout()
+        close_layout.addStretch()
+        close_button = QPushButton("X")
+        close_button.clicked.connect(self.on_show_weather_clicked)
+        close_button.setStyleSheet(close_button_style)
+        close_layout.addWidget(close_button)
+        inner_layout.addLayout(close_layout)
+
+        about_program_label = QLabel("Aplikacja prognozy pogody pozwala na natychmiastowe uzyskanie aktualnych informacji o: temperaturze wraz z\n\nwartością odczuwalną, podsumowaniu pogody, ciśnieniu, wilgotności i prędkości wiatru. Wyświetlana jest ikona\n\nprzedstawiająca obecną sytuację pogodową. Działanie programu wymaga ustawienia lokalizacji według miasta\n\nlub współrzędnych geograficznych.")
+        about_program_label.setStyleSheet(about_program_style)
+        inner_layout.addWidget(about_program_label)
+
+        main_layout.addWidget(inner_widget)
+
+        main_widget.setLayout(main_layout)
+
+# class ChangeThemeWindow(BaseWindow):
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = ShowWeatherWindow()
+    window = AboutProgramWindow()
     window.show()
     sys.exit(app.exec())
