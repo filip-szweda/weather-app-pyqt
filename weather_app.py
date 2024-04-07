@@ -3,20 +3,56 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWid
 from PyQt6.QtGui import QFont, QFontDatabase
 from PyQt6.QtCore import Qt
 
-class MainWindow(QMainWindow):
+class BaseWindow(QMainWindow):
+    windows = []
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Prognoza Pogody")
         self.setFixedSize(1280, 720)
         self.setObjectName("main-window")
 
+        self.create_menu_bar()
         self.init_ui()
 
+    def create_menu_bar(self):
+        menubar = self.menuBar()
+        menubar.setObjectName("menu")
+
+        menubar.addMenu("Prognoza Pogody")
+        
+        localisation_menu = menubar.addMenu("Lokalizacja")
+        localisation_menu.setObjectName("menu")
+
+        settings_menu = menubar.addMenu("Ustawienia")
+        settings_menu.setObjectName("menu")
+
+        menubar.addAction("O Programie")
+
+        coordinates_menu = localisation_menu.addMenu("Zmień Koordynaty")
+        coordinates_menu.setObjectName("menu")
+
+        localisation_menu.addAction("Zmień Miasto")
+
+        length_action = coordinates_menu.addAction("Długość Geo.")
+        length_action.triggered.connect(self.on_length_clicked)
+
+        coordinates_menu.addAction("Szerokość Geo.")
+
+        settings_menu.addAction("Motyw")
+
+    def init_ui(self):
+        pass
+
+    def on_length_clicked(self):
+        length_window = LengthWindow()
+        length_window.show()
+        self.windows.append(length_window)
+
+class WeatherWindow(BaseWindow):
     def init_ui(self):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
-
-        self.create_menu_bar()
 
         layout = QVBoxLayout()
         self.central_widget.setLayout(layout)
@@ -54,29 +90,47 @@ class MainWindow(QMainWindow):
         wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
         weather_layout.addWidget(wind_speed_info)
 
-    def create_menu_bar(self):
-        menubar = self.menuBar()
-        menubar.setObjectName("menu")
+class LengthWindow(BaseWindow):
+    def init_ui(self):
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
 
-        menubar.addMenu("Prognoza Pogody")
-        
-        localisation_menu = menubar.addMenu("Lokalizacja")
-        localisation_menu.setObjectName("menu")
+        layout = QVBoxLayout()
+        self.central_widget.setLayout(layout)
 
-        settings_menu = menubar.addMenu("Ustawienia")
-        settings_menu.setObjectName("menu")
+        length_layout = QVBoxLayout()
+        layout.addLayout(length_layout)
 
-        menubar.addAction("O Programie")
+        length_info = QLabel("Długość geograficzna: 50.06143")
+        length_info.setObjectName("other-info")
+        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        length_layout.addWidget(length_info)
 
-        coordinates_menu = localisation_menu.addMenu("Zmień Koordynaty")
-        coordinates_menu.setObjectName("menu")
+        length_info = QLabel("Długość geograficzna: 19.93658")
+        length_info.setObjectName("other-info")
+        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        length_layout.addWidget(length_info)
 
-        localisation_menu.addAction("Zmień Miasto")
+        length_info = QLabel("Długość geograficzna: 50.06143")
+        length_info.setObjectName("other-info")
+        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        length_layout.addWidget(length_info)
 
-        coordinates_menu.addAction("Długość Geo.")
-        coordinates_menu.addAction("Szerokość Geo.")
+        length_info = QLabel("Długość geograficzna: 19.93658")
+        length_info.setObjectName("other-info")
+        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        length_layout.addWidget(length_info)
 
-        settings_menu.addAction("Motyw")
+        length_info = QLabel("Długość geograficzna: 50.06143")
+        length_info.setObjectName("other-info")
+        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        length_layout.addWidget(length_info)
+
+        length_info = QLabel("Długość geograficzna: 19.93658")
+        length_info.setObjectName("other-info")
+        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        length_layout.addWidget(length_info)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -85,6 +139,6 @@ if __name__ == "__main__":
             app.setStyleSheet(file.read())
     except FileNotFoundError:
         print("Nie można odnaleźć pliku styles.css")
-    window = MainWindow()
+    window = WeatherWindow()
     window.show()
     sys.exit(app.exec())
