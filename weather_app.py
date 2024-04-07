@@ -2,7 +2,7 @@ import sys
 import requests
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout
-from PyQt6.QtGui import QFont, QFontDatabase
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 from googletrans import Translator
 
@@ -83,24 +83,31 @@ class WeatherWindow(BaseWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         self.central_widget.setLayout(layout)
 
+        image_label = QLabel()
+        pixmap = QPixmap("cloudy.png")
+        scaled_pixmap = pixmap.scaledToWidth(200)
+        image_label.setPixmap(scaled_pixmap)
+        image_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(image_label, 1)
+
         weather_layout = QVBoxLayout()
-        layout.addLayout(weather_layout)
+        layout.addLayout(weather_layout, 2)
 
         weather = get_weather()
         
         temp = weather["main"]["temp"]
         temp_info = QLabel(f"{temp}ºC")
         temp_info.setObjectName("temperature-info")
-        temp_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        temp_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(temp_info)
 
         feels_like_temp = weather["main"]["feels_like"]
         feels_like_temp_info = QLabel(f"Odczuwalnie: {feels_like_temp}ºC")
         feels_like_temp_info.setObjectName("other-info")
-        feels_like_temp_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        feels_like_temp_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(feels_like_temp_info)
 
         translator = Translator()
@@ -108,25 +115,25 @@ class WeatherWindow(BaseWindow):
         translated_message = translator.translate(message, dest="pl").text
         message_info = QLabel(f"Spodziewaj się: {translated_message.lower()}!")
         message_info.setObjectName("other-info")
-        message_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        message_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(message_info)
 
         pressure = weather["main"]["pressure"]
-        pressure_info = QLabel(f"Ciśnienie:\t\t{pressure} hPa")
+        pressure_info = QLabel(f"Ciśnienie:\t{pressure} hPa")
         pressure_info.setObjectName("other-info")
-        pressure_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        pressure_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(pressure_info)
 
         humidity = weather["main"]["humidity"]
-        humidity_info = QLabel(f"Wilgotność:\t\t{humidity}%")
+        humidity_info = QLabel(f"Wilgotność:\t{humidity}%")
         humidity_info.setObjectName("other-info")
-        humidity_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        humidity_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(humidity_info)
 
         wind_speed = weather["wind"]["speed"]
-        wind_speed_info = QLabel(f"Prędkość:\t\t{wind_speed}km/h")
+        wind_speed_info = QLabel(f"Prędkość:\t{wind_speed}km/h")
         wind_speed_info.setObjectName("other-info")
-        wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(wind_speed_info)
 
 class LatitudeWindow(BaseWindow):
