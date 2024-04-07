@@ -11,15 +11,20 @@ api_key = "a873d523875cab9a1f04d55526e2d604"
 lat = "50.06143"
 lon = "19.93658"
 
-base_window_style="background-color: #0A0D11;"
-menu_style="background-color: #6272A4; color: #ffffff; font-size: 24px;"
-text_box_style="background-color: #F8F8F2; border: 1px #F8F8F2;"
+background_color = "#0A0D11"
+foreground_color = "#6272A4"
+selection_color = "#44475A"
+text_field_color = "#F8F8F2"
+
+base_window_style=f"background-color: {background_color};"
+menu_style=f"background-color: {foreground_color}; color: #ffffff; font-size: 24px;"
+text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
 temp_info_style="color: #ffffff; font-size: 96px;"
 other_info_style="color: #ffffff; font-size: 24px;"
 about_program_style="color: #ffffff; font-size: 20px;"
 close_button_style="color: #ffffff; background-color: #FF5555; border: 1px #FF5555;"
 save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
-inner_widget_style="background-color: #44475A; padding: 10px;"
+inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
 
 def get_weather():
     # url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
@@ -217,7 +222,7 @@ class ChangeLatitudeWindow(BaseWindow):
 
         self.number_entry = QLineEdit()
         self.number_entry.setPlaceholderText("<długość geograficzna>")
-        self.number_entry.setStyleSheet(text_box_style)
+        self.number_entry.setStyleSheet(text_field_style)
         inner_layout.addWidget(self.number_entry, 2)
 
         save_button = QPushButton("Zatwierdź")
@@ -261,7 +266,7 @@ class ChangeLongitudeWindow(BaseWindow):
 
         self.number_entry = QLineEdit()
         self.number_entry.setPlaceholderText("<szerokość geograficzna>")
-        self.number_entry.setStyleSheet(text_box_style)
+        self.number_entry.setStyleSheet(text_field_style)
         inner_layout.addWidget(self.number_entry, 2)
 
         save_button = QPushButton("Zatwierdź")
@@ -305,7 +310,7 @@ class ChangeCityWindow(BaseWindow):
 
         self.city_entry = QLineEdit()
         self.city_entry.setPlaceholderText("<miasto>")
-        self.city_entry.setStyleSheet(text_box_style)
+        self.city_entry.setStyleSheet(text_field_style)
         inner_layout.addWidget(self.city_entry, 2)
 
         save_button = QPushButton("Zatwierdź")
@@ -365,6 +370,7 @@ class ChangeThemeWindow(BaseWindow):
         inner_widget.setStyleSheet(inner_widget_style)
 
         self.color_pick_buttons = []
+        self.colors = [background_color, foreground_color, selection_color, text_field_color]
 
         for label in ["Kolor Tła", "Kolor Pierwszoplanowy", "Kolor Zaznaczenia", "Kolor Pola Tekstowego"]:
             color_pick_button = QPushButton(label)
@@ -388,15 +394,26 @@ class ChangeThemeWindow(BaseWindow):
         color = color_dialog.getColor()
         if color.isValid():
             index = self.color_pick_buttons.index(sender)
-            self.color_labels[index].setStyleSheet(f"background-color: {color.name()}; color: black;")
+            self.colors[index] = color.name()
 
     def save_colors(self):
         global background_color, foreground_color, selection_color, text_field_color
-        background_color = self.color_labels[0].palette().color(self.color_labels[0].backgroundRole())
-        foreground_color = self.color_labels[1].palette().color(self.color_labels[1].backgroundRole())
-        selection_color = self.color_labels[2].palette().color(self.color_labels[2].backgroundRole())
-        text_field_color = self.color_labels[3].palette().color(self.color_labels[3].backgroundRole())
-        print("Colors saved as global variables.")
+        background_color = self.colors[0]
+        foreground_color = self.colors[1]
+        selection_color = self.colors[2]
+        text_field_color = self.colors[3]
+        
+        global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style
+        base_window_style=f"background-color: {background_color};"
+        menu_style=f"background-color: {foreground_color}; color: #ffffff; font-size: 24px;"
+        text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
+        temp_info_style="color: #ffffff; font-size: 96px;"
+        other_info_style="color: #ffffff; font-size: 24px;"
+        about_program_style="color: #ffffff; font-size: 20px;"
+        close_button_style="color: #ffffff; background-color: #FF5555; border: 1px #FF5555;"
+        save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
+        inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
+        self.on_show_weather_clicked()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
