@@ -1,7 +1,19 @@
 import sys
+import requests
+
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout
 from PyQt6.QtGui import QFont, QFontDatabase
 from PyQt6.QtCore import Qt
+
+lat = "50.06143"
+lon = "19.93658"
+
+def get_weather():
+    api_key = "a873d523875cab9a1f04d55526e2d604"
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    data = response.json()
+    return data
 
 class BaseWindow(QMainWindow):
     windows = []
@@ -34,8 +46,8 @@ class BaseWindow(QMainWindow):
 
         localisation_menu.addAction("Zmień Miasto")
 
-        length_action = coordinates_menu.addAction("Długość Geo.")
-        length_action.triggered.connect(self.on_length_clicked)
+        latitude_action = coordinates_menu.addAction("Długość Geo.")
+        latitude_action.triggered.connect(self.on_latitude_clicked)
 
         coordinates_menu.addAction("Szerokość Geo.")
 
@@ -44,10 +56,10 @@ class BaseWindow(QMainWindow):
     def init_ui(self):
         pass
 
-    def on_length_clicked(self):
-        length_window = LengthWindow()
-        length_window.show()
-        self.windows.append(length_window)
+    def on_latitude_clicked(self):
+        latitude_window = LatitudeWindow()
+        latitude_window.show()
+        self.windows.append(latitude_window)
 
 class WeatherWindow(BaseWindow):
     def init_ui(self):
@@ -60,7 +72,10 @@ class WeatherWindow(BaseWindow):
         weather_layout = QVBoxLayout()
         layout.addLayout(weather_layout)
 
-        temperature_info = QLabel("12ºC")
+        weather = get_weather()
+        
+        temperature = weather["main"]["temp"]
+        temperature_info = QLabel(f"{temperature}ºC")
         temperature_info.setObjectName("temperature-info")
         temperature_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
         weather_layout.addWidget(temperature_info)
@@ -90,7 +105,7 @@ class WeatherWindow(BaseWindow):
         wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
         weather_layout.addWidget(wind_speed_info)
 
-class LengthWindow(BaseWindow):
+class LatitudeWindow(BaseWindow):
     def init_ui(self):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
@@ -98,38 +113,38 @@ class LengthWindow(BaseWindow):
         layout = QVBoxLayout()
         self.central_widget.setLayout(layout)
 
-        length_layout = QVBoxLayout()
-        layout.addLayout(length_layout)
+        latitude_layout = QVBoxLayout()
+        layout.addLayout(latitude_layout)
 
-        length_info = QLabel("Długość geograficzna: 50.06143")
-        length_info.setObjectName("other-info")
-        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        length_layout.addWidget(length_info)
+        latitude_info = QLabel("Długość geograficzna: 50.06143")
+        latitude_info.setObjectName("other-info")
+        latitude_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        latitude_layout.addWidget(latitude_info)
 
-        length_info = QLabel("Długość geograficzna: 19.93658")
-        length_info.setObjectName("other-info")
-        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        length_layout.addWidget(length_info)
+        latitude_info = QLabel("Długość geograficzna: 19.93658")
+        latitude_info.setObjectName("other-info")
+        latitude_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        latitude_layout.addWidget(latitude_info)
 
-        length_info = QLabel("Długość geograficzna: 50.06143")
-        length_info.setObjectName("other-info")
-        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        length_layout.addWidget(length_info)
+        latitude_info = QLabel("Długość geograficzna: 50.06143")
+        latitude_info.setObjectName("other-info")
+        latitude_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        latitude_layout.addWidget(latitude_info)
 
-        length_info = QLabel("Długość geograficzna: 19.93658")
-        length_info.setObjectName("other-info")
-        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        length_layout.addWidget(length_info)
+        latitude_info = QLabel("Długość geograficzna: 19.93658")
+        latitude_info.setObjectName("other-info")
+        latitude_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        latitude_layout.addWidget(latitude_info)
 
-        length_info = QLabel("Długość geograficzna: 50.06143")
-        length_info.setObjectName("other-info")
-        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        length_layout.addWidget(length_info)
+        latitude_info = QLabel("Długość geograficzna: 50.06143")
+        latitude_info.setObjectName("other-info")
+        latitude_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        latitude_layout.addWidget(latitude_info)
 
-        length_info = QLabel("Długość geograficzna: 19.93658")
-        length_info.setObjectName("other-info")
-        length_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        length_layout.addWidget(length_info)
+        latitude_info = QLabel("Długość geograficzna: 19.93658")
+        latitude_info.setObjectName("other-info")
+        latitude_info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        latitude_layout.addWidget(latitude_info)
 
 
 if __name__ == "__main__":
