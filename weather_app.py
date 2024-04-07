@@ -11,20 +11,19 @@ api_key = "a873d523875cab9a1f04d55526e2d604"
 lat = "50.06143"
 lon = "19.93658"
 
-background_color = "#0A0D11"
-foreground_color = "#6272A4"
-selection_color = "#44475A"
-text_field_color = "#F8F8F2"
+base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style = "", "", "", "", "", "", "", "", ""
 
-base_window_style=f"background-color: {background_color};"
-menu_style=f"background-color: {foreground_color}; color: #ffffff; font-size: 24px;"
-text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
-temp_info_style="color: #ffffff; font-size: 96px;"
-other_info_style="color: #ffffff; font-size: 24px;"
-about_program_style="color: #ffffff; font-size: 20px;"
-close_button_style="color: #ffffff; background-color: #FF5555; border: 1px #FF5555;"
-save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
-inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
+def setup_styles(background_color, foreground_color, selection_color, text_field_color):
+    global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style
+    base_window_style=f"background-color: {background_color};"
+    menu_style=f"background-color: {foreground_color}; color: #FFFFFF; font-size: 24px;"
+    text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
+    temp_info_style="color: #FFFFFF; font-size: 96px;"
+    other_info_style="color: #FFFFFF; font-size: 24px;"
+    about_program_style="color: #FFFFFF; font-size: 20px;"
+    close_button_style="color: #FFFFFF; background-color: #FF5555; border: 1px #FF5555;"
+    save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
+    inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
 
 def get_weather():
     # url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
@@ -370,7 +369,7 @@ class ChangeThemeWindow(BaseWindow):
         inner_widget.setStyleSheet(inner_widget_style)
 
         self.color_pick_buttons = []
-        self.colors = [background_color, foreground_color, selection_color, text_field_color]
+        self.colors = ["#0A0D11", "#6272A4", "#44475A", "#F8F8F2"]
 
         for label in ["Kolor Tła", "Kolor Pierwszoplanowy", "Kolor Zaznaczenia", "Kolor Pola Tekstowego"]:
             color_pick_button = QPushButton(label)
@@ -397,26 +396,12 @@ class ChangeThemeWindow(BaseWindow):
             self.colors[index] = color.name()
 
     def save_colors(self):
-        global background_color, foreground_color, selection_color, text_field_color
-        background_color = self.colors[0]
-        foreground_color = self.colors[1]
-        selection_color = self.colors[2]
-        text_field_color = self.colors[3]
-        
-        global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style
-        base_window_style=f"background-color: {background_color};"
-        menu_style=f"background-color: {foreground_color}; color: #ffffff; font-size: 24px;"
-        text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
-        temp_info_style="color: #ffffff; font-size: 96px;"
-        other_info_style="color: #ffffff; font-size: 24px;"
-        about_program_style="color: #ffffff; font-size: 20px;"
-        close_button_style="color: #ffffff; background-color: #FF5555; border: 1px #FF5555;"
-        save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
-        inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
+        setup_styles(self.colors[0], self.colors[1], self.colors[2], self.colors[3])
         self.on_show_weather_clicked()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    setup_styles("#0A0D11", "#6272A4", "#44475A", "#F8F8F2")
     window = ChangeThemeWindow()
     window.show()
     sys.exit(app.exec())
