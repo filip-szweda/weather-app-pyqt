@@ -51,6 +51,7 @@ class BaseWindow(QMainWindow):
 
         self.create_menu_bar()
         self.create_ui()
+        print(lat)
 
     def create_menu_bar(self):
         menubar = self.menuBar()
@@ -214,7 +215,9 @@ class ChangeLatitudeWindow(BaseWindow):
         main_widget.setLayout(main_layout)
 
     def save_number(self):
+        global lat
         lat = self.number_entry.text()
+        self.on_weather_clicked()
 
 
 if __name__ == "__main__":
