@@ -2,7 +2,7 @@ import sys
 import requests
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QLineEdit, QPushButton, QColorDialog
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QIcon, QAction
 from PyQt6.QtCore import Qt
 from googletrans import Translator
 
@@ -21,33 +21,33 @@ def setup_styles():
     menu_style="QMenuBar {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenuBar::item::selected {background-color: " + selection_color + "; } QMenu {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenu::item::selected { background-color: " + selection_color + ";}"
     text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
     temp_info_style="color: #FFFFFF; font-size: 96px;"
-    other_info_style="color: #FFFFFF; font-size: 24px;"
+    other_info_style="color: #FFFFFF; font-size: 24px; border: 1px;"
     about_program_style="color: #FFFFFF; font-size: 20px;"
-    close_button_style="color: #FFFFFF; background-color: #FF5555; border: 1px #FF5555;"
-    save_button_style="background-color: #50FA7B; border: 1px #50FA7B;"
+    close_button_style="color: #FFFFFF; background-color: #FF5555; border: 1px #FF5555; font-size: 24px;"
+    save_button_style="background-color: #50FA7B; border: 1px #50FA7B; font-size: 24px;"
     inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
 
 def get_weather():
-    # url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-    # response = requests.get(url)
-    # data = response.json()
-    # return data
-    return {
-        "weather": [
-            {
-                "description": "clear sky"
-            }
-        ],
-        "main": {
-            "temp": 20,
-            "feels_like": 21,
-            "pressure": 1000,
-            "humidity": 50
-        },
-        "wind": {
-            "speed": 10
-        }
-    }
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    data = response.json()
+    return data
+    # return {
+    #     "weather": [
+    #         {
+    #             "description": "clear sky"
+    #         }
+    #     ],
+    #     "main": {
+    #         "temp": 20,
+    #         "feels_like": 21,
+    #         "pressure": 1000,
+    #         "humidity": 50
+    #     },
+    #     "wind": {
+    #         "speed": 10
+    #     }
+    # }
 
 def change_city(city):
     url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={api_key}"
@@ -71,10 +71,11 @@ class BaseWindow(QMainWindow):
 
     def create_menu_bar(self):
         menubar = self.menuBar()
-        # self.setStyleSheet("QMenuBar::item { background-color: red; } QMenu::item:selected { background-color: red; }")
         menubar.setStyleSheet(menu_style)
 
-        menubar.addMenu("Prognoza Pogody")
+        icon_action = QAction(QIcon("cloudy.png"), "logo", self)
+        icon_action.triggered.connect(self.on_show_weather_clicked)
+        menubar.addAction(icon_action)
         
         localisation_menu = menubar.addMenu("Lokalizacja")
         localisation_menu.setObjectName("menu")
@@ -407,6 +408,6 @@ class ChangeThemeWindow(BaseWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     setup_styles()
-    window = ChangeThemeWindow()
+    window = ShowWeatherWindow()
     window.show()
     sys.exit(app.exec())
