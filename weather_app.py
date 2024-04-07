@@ -16,7 +16,7 @@ base_window_style, menu_style, text_field_style, temp_info_style, other_info_sty
 def setup_styles(background_color, foreground_color, selection_color, text_field_color):
     global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style
     base_window_style=f"background-color: {background_color};"
-    menu_style=f"background-color: {foreground_color}; color: #FFFFFF; font-size: 24px;"
+    menu_style="QMenuBar {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenuBar::item::selected {background-color: " + selection_color + "; } QMenu {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenu::item::selected { background-color: " + selection_color + ";}"
     text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
     temp_info_style="color: #FFFFFF; font-size: 96px;"
     other_info_style="color: #FFFFFF; font-size: 24px;"
@@ -69,6 +69,7 @@ class BaseWindow(QMainWindow):
 
     def create_menu_bar(self):
         menubar = self.menuBar()
+        # self.setStyleSheet("QMenuBar::item { background-color: red; } QMenu::item:selected { background-color: red; }")
         menubar.setStyleSheet(menu_style)
 
         menubar.addMenu("Prognoza Pogody")
