@@ -191,7 +191,7 @@ class ChangeLatitudeWindow(BaseWindow):
         close_layout = QHBoxLayout()
         close_layout.addStretch()
         close_button = QPushButton("X")
-        close_button.clicked.connect(self.close)
+        close_button.clicked.connect(self.on_weather_clicked)
         close_button.setStyleSheet(close_button_style)
         close_layout.addWidget(close_button)
         inner_layout.addLayout(close_layout)
