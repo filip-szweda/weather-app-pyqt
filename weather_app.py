@@ -11,9 +11,11 @@ api_key = "a873d523875cab9a1f04d55526e2d604"
 lat = "50.06143"
 lon = "19.93658"
 
+background_color, foreground_color, selection_color, text_field_color = "#0A0D11", "#6272A4", "#44475A", "#F8F8F2"
+
 base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style = "", "", "", "", "", "", "", "", ""
 
-def setup_styles(background_color, foreground_color, selection_color, text_field_color):
+def setup_styles():
     global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style
     base_window_style=f"background-color: {background_color};"
     menu_style="QMenuBar {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenuBar::item::selected {background-color: " + selection_color + "; } QMenu {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenu::item::selected { background-color: " + selection_color + ";}"
@@ -370,7 +372,7 @@ class ChangeThemeWindow(BaseWindow):
         inner_widget.setStyleSheet(inner_widget_style)
 
         self.color_pick_buttons = []
-        self.colors = ["#0A0D11", "#6272A4", "#44475A", "#F8F8F2"]
+        self.colors = [background_color, foreground_color, selection_color, text_field_color]
 
         for label in ["Kolor Tła", "Kolor Pierwszoplanowy", "Kolor Zaznaczenia", "Kolor Pola Tekstowego"]:
             color_pick_button = QPushButton(label)
@@ -397,12 +399,14 @@ class ChangeThemeWindow(BaseWindow):
             self.colors[index] = color.name()
 
     def save_colors(self):
-        setup_styles(self.colors[0], self.colors[1], self.colors[2], self.colors[3])
+        global background_color, foreground_color, selection_color, text_field_color
+        background_color, foreground_color, selection_color, text_field_color = self.colors
+        setup_styles()
         self.on_show_weather_clicked()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    setup_styles("#0A0D11", "#6272A4", "#44475A", "#F8F8F2")
+    setup_styles()
     window = ChangeThemeWindow()
     window.show()
     sys.exit(app.exec())
