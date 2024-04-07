@@ -1,7 +1,7 @@
 import sys
 import requests
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QLineEdit, QPushButton, QColorDialog
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 from googletrans import Translator
@@ -351,11 +351,55 @@ class AboutProgramWindow(BaseWindow):
 
         main_widget.setLayout(main_layout)
 
-# class ChangeThemeWindow(BaseWindow):
+class ChangeThemeWindow(BaseWindow):
+    def create_ui(self):
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
 
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(100, 100, 100, 100)
+
+        inner_widget = QWidget()
+        inner_layout = QVBoxLayout()
+        inner_widget.setLayout(inner_layout)
+        inner_widget.setStyleSheet(inner_widget_style)
+
+        self.color_pick_buttons = []
+
+        for label in ["Kolor Tła", "Kolor Pierwszoplanowy", "Kolor Zaznaczenia", "Kolor Pola Tekstowego"]:
+            color_pick_button = QPushButton(label)
+            color_pick_button.setStyleSheet(other_info_style)
+            color_pick_button.clicked.connect(self.pick_color)
+            inner_layout.addWidget(color_pick_button)
+            self.color_pick_buttons.append(color_pick_button)
+
+        save_button = QPushButton("Zatwierdź")
+        save_button.clicked.connect(self.save_colors)
+        save_button.setStyleSheet(save_button_style)
+        inner_layout.addWidget(save_button)
+
+        main_layout.addWidget(inner_widget)
+
+        main_widget.setLayout(main_layout)
+
+    def pick_color(self):
+        sender = self.sender()
+        color_dialog = QColorDialog()
+        color = color_dialog.getColor()
+        if color.isValid():
+            index = self.color_pick_buttons.index(sender)
+            self.color_labels[index].setStyleSheet(f"background-color: {color.name()}; color: black;")
+
+    def save_colors(self):
+        global background_color, foreground_color, selection_color, text_field_color
+        background_color = self.color_labels[0].palette().color(self.color_labels[0].backgroundRole())
+        foreground_color = self.color_labels[1].palette().color(self.color_labels[1].backgroundRole())
+        selection_color = self.color_labels[2].palette().color(self.color_labels[2].backgroundRole())
+        text_field_color = self.color_labels[3].palette().color(self.color_labels[3].backgroundRole())
+        print("Colors saved as global variables.")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = AboutProgramWindow()
+    window = ChangeThemeWindow()
     window.show()
     sys.exit(app.exec())
