@@ -29,33 +29,39 @@ def setup_styles():
 
 def get_weather():
     url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+    print(lat)
+    print(lon)
     response = requests.get(url)
-    data = response.json()
-    return data
-    # return {
-    #     "weather": [
-    #         {
-    #             "description": "clear sky"
-    #         }
-    #     ],
-    #     "main": {
-    #         "temp": 20,
-    #         "feels_like": 21,
-    #         "pressure": 1000,
-    #         "humidity": 50
-    #     },
-    #     "wind": {
-    #         "speed": 10
-    #     }
-    # }
+    if response.status_code == 200:
+        return response.json()
+    return {
+        "weather": [
+            {
+                "description": "N/A"
+            }
+        ],
+        "main": {
+            "temp": "N/A",
+            "feels_like": "N/A",
+            "pressure": "N/A",
+            "humidity": "N/A"
+        },
+        "wind": {
+            "speed": "N/A"
+        }
+    }
 
 def change_city(city):
     url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={api_key}"
     response = requests.get(url)
     data = response.json()
     global lat, lon
-    lat = data[0]["lat"]
-    lon = data[0]["lon"]
+    if response.status_code == 200 and data:
+        lat = data[0]["lat"]
+        lon = data[0]["lon"]
+    else:
+        lat = None
+        lon = None
 
 class BaseWindow(QMainWindow):
     windows = []
@@ -174,8 +180,8 @@ class ShowWeatherWindow(BaseWindow):
 
         translator = Translator()
         message = weather["weather"][0]["description"]
-        translated_message = translator.translate(message, dest="pl").text
-        message_info = QLabel(f"Spodziewaj się: {translated_message.lower()}!")
+        translated_message = translator.translate(message, dest="pl").text.lower() if message != "N/A" else "N/A"
+        message_info = QLabel(f"Spodziewaj się: {translated_message}!")
         message_info.setStyleSheet(other_info_style)
         message_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(message_info)
