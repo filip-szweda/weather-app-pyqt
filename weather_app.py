@@ -29,8 +29,6 @@ def setup_styles():
 
 def get_weather():
     url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-    print(lat)
-    print(lon)
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
