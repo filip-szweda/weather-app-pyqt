@@ -13,13 +13,14 @@ lon = "19.93658"
 
 background_color, foreground_color, selection_color, text_field_color = "#0A0D11", "#6272A4", "#44475A", "#F8F8F2"
 
-base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style = "", "", "", "", "", "", "", "", ""
+base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style, color_picker_style = "", "", "", "", "", "", "", "", "", ""
 
 def setup_styles():
-    global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style
+    global base_window_style, menu_style, text_field_style, temp_info_style, other_info_style, about_program_style, close_button_style, save_button_style, inner_widget_style, color_picker_style
     base_window_style=f"background-color: {background_color};"
     menu_style="QMenuBar {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenuBar::item::selected {background-color: " + selection_color + "; } QMenu {background-color: " + foreground_color + "; color: #FFFFFF; font-size: 24px;} QMenu::item::selected { background-color: " + selection_color + ";}"
     text_field_style=f"background-color: {text_field_color}; border: 1px {text_field_color};"
+    color_picker_style=f"background-color: {text_field_color}; border: 1px {text_field_color}; font-size: 24px;"
     temp_info_style="color: #FFFFFF; font-size: 96px;"
     other_info_style="color: #FFFFFF; font-size: 24px; border: 1px;"
     about_program_style="color: #FFFFFF; font-size: 20px;"
@@ -77,9 +78,9 @@ class BaseWindow(QMainWindow):
         menubar = self.menuBar()
         menubar.setStyleSheet(menu_style)
 
-        icon_action = QAction(QIcon("cloudy.png"), "logo", self)
-        icon_action.triggered.connect(self.on_show_weather_clicked)
-        menubar.addAction(icon_action)
+        weather_action = menubar.addAction("Prognoza Pogody")
+        weather_action.triggered.connect(self.on_show_weather_clicked)
+        menubar.addAction(weather_action)
         
         localisation_menu = menubar.addMenu("Lokalizacja")
         localisation_menu.setObjectName("menu")
@@ -381,7 +382,7 @@ class ChangeThemeWindow(BaseWindow):
 
         for label in ["Kolor Tła", "Kolor Pierwszoplanowy", "Kolor Zaznaczenia", "Kolor Pola Tekstowego"]:
             color_pick_button = QPushButton(label)
-            color_pick_button.setStyleSheet(other_info_style)
+            color_pick_button.setStyleSheet(color_picker_style)
             color_pick_button.clicked.connect(self.pick_color)
             inner_layout.addWidget(color_pick_button)
             self.color_pick_buttons.append(color_pick_button)
