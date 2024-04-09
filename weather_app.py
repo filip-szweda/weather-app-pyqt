@@ -8,6 +8,8 @@ from googletrans import Translator
 
 api_key = "a873d523875cab9a1f04d55526e2d604"
 
+is_sunny = True
+
 lat = "50.06143"
 lon = "19.93658"
 
@@ -31,8 +33,13 @@ def setup_styles():
 def get_weather():
     url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
     response = requests.get(url)
+    global is_sunny
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        message = data["weather"][0]["description"]
+        is_sunny = "rain" in message or "cloud" in message
+        return data
+    is_sunny = True
     return {
         "weather": [
             {
@@ -155,7 +162,7 @@ class ShowWeatherWindow(BaseWindow):
         self.central_widget.setLayout(layout)
 
         image_label = QLabel()
-        pixmap = QPixmap("cloudy.png")
+        pixmap = QPixmap("sunny.png" if is_sunny else "cloudy.png")
         image_label.setPixmap(pixmap)
         image_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         layout.addWidget(image_label, 1)
