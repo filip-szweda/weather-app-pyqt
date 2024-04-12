@@ -1,7 +1,7 @@
 import sys
 import requests
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QDialog, QLineEdit, QPushButton
 from PyQt6.QtGui import QPixmap, QIcon, QAction
 from PyQt6.QtCore import Qt
 from googletrans import Translator
@@ -10,8 +10,8 @@ api_key = "a873d523875cab9a1f04d55526e2d604"
 
 is_sunny = True
 
-lat = "50.06143"
 lon = "19.93658"
+lat = "50.06143"
 
 background_color, foreground_color, selection_color, text_field_color = "#0A0D11", "#6272A4", "#44475A", "#F8F8F2"
 
@@ -143,13 +143,12 @@ class WeatherForecastWindow(QMainWindow):
         self.wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(self.wind_speed_info)
 
-        self.wind_speed_info = QLabel(f"Obecne współrzędne geograficzne:\nDługość ({lon}), Szerokość ({lat})")
-        self.wind_speed_info.setStyleSheet(other_info_style)
-        self.wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        weather_layout.addWidget(self.wind_speed_info)
+        self.coordinates_info = QLabel(f"Obecne współrzędne geograficzne:\nDługość ({lon}), Szerokość ({lat})")
+        self.coordinates_info.setStyleSheet(other_info_style)
+        self.coordinates_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        weather_layout.addWidget(self.coordinates_info)
 
-    def update_weather(self):
-        weather = get_weather()
+    def update_weather_in_ui(self, weather):
         temp = weather["main"]["temp"]
         feels_like_temp = weather["main"]["feels_like"]
         message = weather["weather"][0]["description"]
@@ -164,8 +163,12 @@ class WeatherForecastWindow(QMainWindow):
         self.humidity_info.setText(f"Wilgotność:\t{humidity}%")
         self.wind_speed_info.setText(f"Prędkość:\t{wind_speed}km/h")
 
+    def update_coordinates_in_ui(self):
+        self.coordinates_info.setText(f"Obecne współrzędne geograficzne:\nDługość ({lon}), Szerokość ({lat})")
+
     def on_refresh_clicked(self):
-        self.update_weather()
+        weather = get_weather()
+        self.update_weather_in_ui(weather)
 
     def on_about_program_clicked(self):
         dialog = QDialog(self)
@@ -182,7 +185,46 @@ class WeatherForecastWindow(QMainWindow):
         dialog.exec()
 
     def on_change_coordinates_clicked(self):
-        pass
+        self.dialog = QDialog(self)
+        self.dialog.setStyleSheet(inner_widget_style)
+        self.dialog.setWindowTitle("Zmień Współrzędne")
+        self.dialog.setFixedSize(910, 355)
+
+        layout = QVBoxLayout(self.dialog)
+
+        longitude_label = QLabel(f"Podaj długość geograficzną w formacie zmiennoprzecinkowym:")
+        longitude_label.setStyleSheet(other_info_style)
+        layout.addWidget(longitude_label)
+
+        self.longitude_entry = QLineEdit()
+        self.longitude_entry.setPlaceholderText("<długość geograficzna>")
+        self.longitude_entry.setStyleSheet(text_field_style)
+        layout.addWidget(self.longitude_entry)
+
+        latitude_label = QLabel(f"Podaj szerokość geograficzną w formacie zmiennoprzecinkowym:")
+        latitude_label.setStyleSheet(other_info_style)
+        layout.addWidget(latitude_label)
+
+        self.latitude_entry = QLineEdit()
+        self.latitude_entry.setPlaceholderText("<szerokość geograficzna>")
+        self.latitude_entry.setStyleSheet(text_field_style)
+        layout.addWidget(self.latitude_entry)
+
+        save_button = QPushButton("Zatwierdź")
+        save_button.clicked.connect(self.save_coordinates)
+        save_button.setStyleSheet(save_button_style)
+        layout.addWidget(save_button)
+
+        self.dialog.exec()
+
+    def save_coordinates(self):
+        global lon, lat
+        # TODO: check for valid coordinates
+        lon = self.longitude_entry.text()
+        lat = self.latitude_entry.text()
+        self.update_coordinates_in_ui()
+        self.on_refresh_clicked()
+        self.dialog.close()
 
     def on_change_theme_clicked(self):
         pass
