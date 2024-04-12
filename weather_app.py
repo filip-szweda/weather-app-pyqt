@@ -217,14 +217,40 @@ class WeatherForecastWindow(QMainWindow):
 
         self.dialog.exec()
 
+    def validate_coordinates(self, lon, lat):
+        lon_valid = False
+        lat_valid = False
+        try:
+            lon_float = float(lon)
+            lon_valid = True
+        except ValueError:
+            pass
+        try:
+            lat_float = float(lat)
+            lat_valid = True
+        except ValueError:
+            pass
+        return lon_valid and lat_valid
+
     def save_coordinates(self):
         global lon, lat
-        # TODO: check for valid coordinates
         lon = self.longitude_entry.text()
         lat = self.latitude_entry.text()
-        self.update_coordinates_in_ui()
-        self.on_refresh_clicked()
-        self.dialog.close()
+        if self.validate_coordinates(lon, lat):
+            self.update_coordinates_in_ui()
+            self.on_refresh_clicked()
+            self.dialog.close()
+        else:
+            error_dialog = QDialog(self)
+            error_dialog.setWindowTitle("Błąd")
+            error_dialog.setFixedSize(610, 100)
+            error_dialog.setStyleSheet(inner_widget_style)
+            layout = QVBoxLayout(error_dialog)
+            error_label = QLabel("Niepoprawne współrzędne geograficzne!")
+            error_label.setStyleSheet(other_info_style)
+            error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(error_label)
+            error_dialog.exec()
 
     def on_change_theme_clicked(self):
         pass
