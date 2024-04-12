@@ -58,6 +58,8 @@ def get_weather():
     }
 
 class WeatherForecastWindow(QMainWindow):
+    windows = []
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Prognoza Pogody")
@@ -253,7 +255,51 @@ class WeatherForecastWindow(QMainWindow):
             error_dialog.exec()
 
     def on_change_theme_clicked(self):
-        pass
+        self.dialog = QDialog(self)
+        self.dialog.setStyleSheet(inner_widget_style)
+        self.dialog.setWindowTitle("Zmień Motyw")
+        self.dialog.setFixedSize(910, 355)
+
+        layout = QVBoxLayout(self.dialog)
+
+        dracula_theme_button = QPushButton("Motyw Dracula (Domyślny)")
+        dracula_theme_button.clicked.connect(lambda: self.change_theme("Dracula"))
+        dracula_theme_button.setStyleSheet(color_picker_style)
+        layout.addWidget(dracula_theme_button)
+
+        oxocarbon_theme_button = QPushButton("Motyw Oxocarbon")
+        oxocarbon_theme_button.clicked.connect(lambda: self.change_theme("Oxocarbon"))
+        oxocarbon_theme_button.setStyleSheet(color_picker_style)
+        layout.addWidget(oxocarbon_theme_button)
+        
+        seoul256_theme_button = QPushButton("Motyw Seoul256")
+        seoul256_theme_button.clicked.connect(lambda: self.change_theme("Seoul256"))
+        seoul256_theme_button.setStyleSheet(color_picker_style)
+        layout.addWidget(seoul256_theme_button)
+
+        dogrun_theme_button = QPushButton("Motyw Dogrun")
+        dogrun_theme_button.clicked.connect(lambda: self.change_theme("Dogrun"))
+        dogrun_theme_button.setStyleSheet(color_picker_style)
+        layout.addWidget(dogrun_theme_button)
+
+        self.dialog.exec()
+
+    def change_theme(self, theme):
+        global background_color, foreground_color, selection_color, text_field_color
+        if theme == "Dracula":
+            background_color, foreground_color, selection_color, text_field_color = "#0A0D11", "#6272A4", "#44475A", "#F8F8F2"
+        elif theme == "Oxocarbon":
+            background_color, foreground_color, selection_color, text_field_color = "#1E1E1E", "#D4D4D4", "#4E4E4E", "#2E2E2E"
+        elif theme == "Seoul256":
+            background_color, foreground_color, selection_color, text_field_color = "#2A2A2A", "#B4B7B4", "#4E4E4E", "#2E2E2E"
+        elif theme == "Dogrun":
+            background_color, foreground_color, selection_color, text_field_color = "#1B1B1B", "#D4D4D4", "#4E4E4E", "#2E2E2E"
+        setup_styles()
+        new_window = WeatherForecastWindow()
+        new_window.show()
+        self.windows.append(new_window)
+        self.dialog.close()
+        self.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
