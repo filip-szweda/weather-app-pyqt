@@ -1,7 +1,7 @@
 import sys
 import requests
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QLineEdit, QPushButton, QColorDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QDialog
 from PyQt6.QtGui import QPixmap, QIcon, QAction
 from PyQt6.QtCore import Qt
 from googletrans import Translator
@@ -31,15 +31,15 @@ def setup_styles():
     inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
 
 def get_weather():
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-    response = requests.get(url)
-    global is_sunny
-    if response.status_code == 200:
-        data = response.json()
-        message = data["weather"][0]["description"]
-        is_sunny = "rain" in message or "cloud" in message
-        return data
-    is_sunny = True
+    # url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+    # response = requests.get(url)
+    # global is_sunny
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     message = data["weather"][0]["description"]
+    #     is_sunny = "rain" in message or "cloud" in message
+    #     return data
+    # is_sunny = True
     return {
         "weather": [
             {
@@ -168,7 +168,18 @@ class WeatherForecastWindow(QMainWindow):
         self.update_weather()
 
     def on_about_program_clicked(self):
-        pass
+        dialog = QDialog(self)
+        dialog.setStyleSheet(about_program_style)
+        dialog.setWindowTitle("O Programie")
+        dialog.setFixedSize(910, 355)
+
+        layout = QVBoxLayout(dialog)
+        label = QLabel("Aplikacja prognozy pogody pozwala na natychmiastowe uzyskanie aktualnych informacji o: temperaturze wraz z wartością odzuwalną, podsumowaniu pogody, ciśnieniu, wilgotności i prędkości wiatru. Wyświetlana jest ikona przedstawiająca obecną sytuację pogodową. Działanie programu wymaga ustawienia lokalizacji według miasta lub współrzędnych geograficznych.")
+        label.setAlignment(Qt.AlignmentFlag.AlignJustify)
+        label.setWordWrap(True)
+        layout.addWidget(label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        dialog.exec()
 
     def on_change_coordinates_clicked(self):
         pass
