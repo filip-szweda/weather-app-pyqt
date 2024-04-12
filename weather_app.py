@@ -2,7 +2,7 @@ import sys
 import requests
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QDialog, QLineEdit, QPushButton
-from PyQt6.QtGui import QPixmap, QIcon, QAction
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 from googletrans import Translator
 
@@ -31,15 +31,15 @@ def setup_styles():
     inner_widget_style=f"background-color: {selection_color}; padding: 10px;"
 
 def get_weather():
-    # url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-    # response = requests.get(url)
-    # global is_sunny
-    # if response.status_code == 200:
-    #     data = response.json()
-    #     message = data["weather"][0]["description"]
-    #     is_sunny = "rain" in message or "cloud" in message
-    #     return data
-    # is_sunny = True
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    global is_sunny
+    if response.status_code == 200:
+        data = response.json()
+        message = data["weather"][0]["description"]
+        is_sunny = "rain" in message or "cloud" in message
+        return data
+    is_sunny = True
     return {
         "weather": [
             {
@@ -235,10 +235,12 @@ class WeatherForecastWindow(QMainWindow):
         return lon_valid and lat_valid
 
     def save_coordinates(self):
-        global lon, lat
-        lon = self.longitude_entry.text()
-        lat = self.latitude_entry.text()
-        if self.validate_coordinates(lon, lat):
+        tmp_lon = self.longitude_entry.text()
+        tmp_lat = self.latitude_entry.text()
+        if self.validate_coordinates(tmp_lon, tmp_lat):
+            global lon, lat
+            lon = tmp_lon
+            lat = tmp_lat
             self.update_coordinates_in_ui()
             self.on_refresh_clicked()
             self.dialog.close()
@@ -267,18 +269,18 @@ class WeatherForecastWindow(QMainWindow):
         dracula_theme_button.setStyleSheet(color_picker_style)
         layout.addWidget(dracula_theme_button)
 
-        oxocarbon_theme_button = QPushButton("Motyw Oxocarbon")
-        oxocarbon_theme_button.clicked.connect(lambda: self.change_theme("Oxocarbon"))
+        oxocarbon_theme_button = QPushButton("Motyw Seoul256")
+        oxocarbon_theme_button.clicked.connect(lambda: self.change_theme("Seoul256"))
         oxocarbon_theme_button.setStyleSheet(color_picker_style)
         layout.addWidget(oxocarbon_theme_button)
         
-        seoul256_theme_button = QPushButton("Motyw Seoul256")
-        seoul256_theme_button.clicked.connect(lambda: self.change_theme("Seoul256"))
+        seoul256_theme_button = QPushButton("Motyw Gotham")
+        seoul256_theme_button.clicked.connect(lambda: self.change_theme("Gotham"))
         seoul256_theme_button.setStyleSheet(color_picker_style)
         layout.addWidget(seoul256_theme_button)
 
-        dogrun_theme_button = QPushButton("Motyw Dogrun")
-        dogrun_theme_button.clicked.connect(lambda: self.change_theme("Dogrun"))
+        dogrun_theme_button = QPushButton("Motyw Nord")
+        dogrun_theme_button.clicked.connect(lambda: self.change_theme("Nord"))
         dogrun_theme_button.setStyleSheet(color_picker_style)
         layout.addWidget(dogrun_theme_button)
 
@@ -288,12 +290,12 @@ class WeatherForecastWindow(QMainWindow):
         global background_color, foreground_color, selection_color, text_field_color
         if theme == "Dracula":
             background_color, foreground_color, selection_color, text_field_color = "#0A0D11", "#6272A4", "#44475A", "#F8F8F2"
-        elif theme == "Oxocarbon":
-            background_color, foreground_color, selection_color, text_field_color = "#1E1E1E", "#D4D4D4", "#4E4E4E", "#2E2E2E"
         elif theme == "Seoul256":
-            background_color, foreground_color, selection_color, text_field_color = "#2A2A2A", "#B4B7B4", "#4E4E4E", "#2E2E2E"
-        elif theme == "Dogrun":
-            background_color, foreground_color, selection_color, text_field_color = "#1B1B1B", "#D4D4D4", "#4E4E4E", "#2E2E2E"
+            background_color, foreground_color, selection_color, text_field_color = "#4B4B4B", "#9A7372", "#565656", "#DFDEBD"
+        elif theme == "Gotham":
+            background_color, foreground_color, selection_color, text_field_color = "#091F2E", "#599CAB", "#2AA889", "#99D1CE"
+        elif theme == "Nord":
+            background_color, foreground_color, selection_color, text_field_color = "#81A1C1", "#D8DEE9", "#3C4455", "#434C5E"
         setup_styles()
         new_window = WeatherForecastWindow()
         new_window.show()
