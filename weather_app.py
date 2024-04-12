@@ -81,7 +81,7 @@ class WeatherForecastWindow(QMainWindow):
         refresh_action = menubar.addAction("Odśwież")
         refresh_action.triggered.connect(self.on_refresh_clicked)
 
-        coordinates_action = localisation_menu.addAction("Zmień Koordynaty")
+        coordinates_action = localisation_menu.addAction("Zmień Współrzędne")
         coordinates_action.triggered.connect(self.on_change_coordinates_clicked)
 
         theme_action = settings_menu.addAction("Zmień Motyw")
@@ -139,6 +139,11 @@ class WeatherForecastWindow(QMainWindow):
 
         wind_speed = weather["wind"]["speed"]
         self.wind_speed_info = QLabel(f"Prędkość:\t{wind_speed}km/h")
+        self.wind_speed_info.setStyleSheet(other_info_style)
+        self.wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        weather_layout.addWidget(self.wind_speed_info)
+
+        self.wind_speed_info = QLabel(f"Obecne współrzędne geograficzne:\nDługość ({lon}), Szerokość ({lat})")
         self.wind_speed_info.setStyleSheet(other_info_style)
         self.wind_speed_info.setAlignment(Qt.AlignmentFlag.AlignLeft)
         weather_layout.addWidget(self.wind_speed_info)
