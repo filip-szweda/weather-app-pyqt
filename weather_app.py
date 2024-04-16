@@ -37,7 +37,7 @@ def get_weather():
     if response.status_code == 200:
         data = response.json()
         message = data["weather"][0]["description"]
-        is_sunny = "rain" in message or "cloud" in message
+        is_sunny = "rain" not in message and "cloud" not in message and "storm" not in message and "snow" not in message and "mist" not in message and "fog" not in message and "clouds" not in message
         return data
     is_sunny = True
     return {
@@ -96,16 +96,16 @@ class WeatherForecastWindow(QMainWindow):
         layout = QHBoxLayout()
         self.central_widget.setLayout(layout)
 
-        image_label = QLabel()
+        weather = get_weather()
+
+        self.image_label = QLabel()
         pixmap = QPixmap("sunny.png" if is_sunny else "cloudy.png")
-        image_label.setPixmap(pixmap)
-        image_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        layout.addWidget(image_label, 1)
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.image_label, 1)
 
         weather_layout = QVBoxLayout()
         layout.addLayout(weather_layout, 2)
-
-        weather = get_weather()
 
         temp = weather["main"]["temp"]
         self.temp_info = QLabel(f"{temp}ºC")
@@ -167,6 +167,10 @@ class WeatherForecastWindow(QMainWindow):
 
     def update_coordinates_in_ui(self):
         self.coordinates_info.setText(f"Obecne współrzędne geograficzne:\nDługość ({lon}), Szerokość ({lat})")
+
+    def update_image_in_ui(self):
+        pixmap = QPixmap("sunny.png" if is_sunny else "cloudy.png")
+        self.image_label.setPixmap(pixmap)
 
     def on_refresh_clicked(self):
         weather = get_weather()
@@ -243,6 +247,7 @@ class WeatherForecastWindow(QMainWindow):
             lat = tmp_lat
             self.update_coordinates_in_ui()
             self.on_refresh_clicked()
+            self.update_image_in_ui()
             self.dialog.close()
         else:
             error_dialog = QDialog(self)
