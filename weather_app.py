@@ -160,7 +160,9 @@ class WeatherForecastWindow(QMainWindow):
 
         self.temp_info.setText(f"{temp}ºC")
         self.feels_like_temp_info.setText(f"Odczuwalnie: {feels_like_temp}ºC")
-        self.message_info.setText(f"Spodziewaj się: {message}!")
+        translator = Translator()
+        translated_message = translator.translate(message, dest="pl").text.lower() if message != "N/A" else "N/A"
+        self.message_info.setText(f"Spodziewaj się: {translated_message}!")
         self.pressure_info.setText(f"Ciśnienie:\t{pressure} hPa")
         self.humidity_info.setText(f"Wilgotność:\t{humidity}%")
         self.wind_speed_info.setText(f"Prędkość:\t{wind_speed}km/h")
@@ -198,7 +200,7 @@ class WeatherForecastWindow(QMainWindow):
 
         layout = QVBoxLayout(self.dialog)
 
-        longitude_label = QLabel(f"Podaj długość geograficzną w formacie zmiennoprzecinkowym:")
+        longitude_label = QLabel(f"Podaj długość geograficzną w formacie zmiennoprzecinkowym (-180; 180):")
         longitude_label.setStyleSheet(other_info_style)
         layout.addWidget(longitude_label)
 
@@ -207,7 +209,7 @@ class WeatherForecastWindow(QMainWindow):
         self.longitude_entry.setStyleSheet(text_field_style)
         layout.addWidget(self.longitude_entry)
 
-        latitude_label = QLabel(f"Podaj szerokość geograficzną w formacie zmiennoprzecinkowym:")
+        latitude_label = QLabel(f"Podaj szerokość geograficzną w formacie zmiennoprzecinkowym (−90; 90):")
         latitude_label.setStyleSheet(other_info_style)
         layout.addWidget(latitude_label)
 
@@ -222,34 +224,29 @@ class WeatherForecastWindow(QMainWindow):
         layout.addWidget(save_button)
 
         self.dialog.exec()
-
-    def validate_coordinates(self, lon, lat):
-        lon_valid = False
-        lat_valid = False
+    
+    def validate_longitude(self, lon):
         try:
             lon_float = float(lon)
-            lon_valid = True
+            return -180 <= lon_float <= 180
         except ValueError:
-            pass
+            return False
+        
+    def validate_latitude(self, lat):
         try:
             lat_float = float(lat)
-            lat_valid = True
+            return -90 <= lat_float <= 90
         except ValueError:
-            pass
-        return lon_valid and lat_valid
+            return False
 
     def save_coordinates(self):
         tmp_lon = self.longitude_entry.text()
         tmp_lat = self.latitude_entry.text()
-        if self.validate_coordinates(tmp_lon, tmp_lat):
-            global lon, lat
-            lon = tmp_lon
-            lat = tmp_lat
-            self.update_coordinates_in_ui()
-            self.on_refresh_clicked()
-            self.update_image_in_ui()
-            self.dialog.close()
-        else:
+
+        is_lon_valid = self.validate_longitude(tmp_lon)
+        is_lat_valid = self.validate_latitude(tmp_lat)
+
+        if not is_lon_valid and not is_lat_valid:
             error_dialog = QDialog(self)
             error_dialog.setWindowTitle("Błąd")
             error_dialog.setFixedSize(610, 100)
@@ -260,6 +257,36 @@ class WeatherForecastWindow(QMainWindow):
             error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             layout.addWidget(error_label)
             error_dialog.exec()
+        elif not is_lon_valid:
+            error_dialog = QDialog(self)
+            error_dialog.setWindowTitle("Błąd")
+            error_dialog.setFixedSize(610, 100)
+            error_dialog.setStyleSheet(inner_widget_style)
+            layout = QVBoxLayout(error_dialog)
+            error_label = QLabel("Niepoprawna długość geograficzna!")
+            error_label.setStyleSheet(other_info_style)
+            error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(error_label)
+            error_dialog.exec()
+        elif not is_lat_valid:
+            error_dialog = QDialog(self)
+            error_dialog.setWindowTitle("Błąd")
+            error_dialog.setFixedSize(610, 100)
+            error_dialog.setStyleSheet(inner_widget_style)
+            layout = QVBoxLayout(error_dialog)
+            error_label = QLabel("Niepoprawna szerokość geograficzna!")
+            error_label.setStyleSheet(other_info_style)
+            error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(error_label)
+            error_dialog.exec()
+        else:
+            global lon, lat
+            lon = tmp_lon
+            lat = tmp_lat
+            self.update_coordinates_in_ui()
+            self.on_refresh_clicked()
+            self.update_image_in_ui()
+            self.dialog.close()
 
     def on_change_theme_clicked(self):
         self.dialog = QDialog(self)
